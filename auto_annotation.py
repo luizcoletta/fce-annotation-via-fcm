@@ -413,8 +413,7 @@ def self_training(train, train_labels, test, test_labels):
         posicoes = posicoes.tolist()
         p = 96
 
-        w = posicoes[
-            0:p]  # posicoes[0:p] # índices (posição) dos objetos que serão retirados do conjunto de teste e colocados no conjunto de treino
+        w = posicoes[0:p]  # posicoes[0:p] # índices (posição) dos objetos que serão retirados do conjunto de teste e colocados no conjunto de treino
 
         [train, train_labels, test, test_labels] = increment_training_set(w, train, train_labels, test, test_labels)
 
@@ -424,8 +423,7 @@ def self_training(train, train_labels, test, test_labels):
 
         print("Iteration " + str(k) + " - Sizes: Training Set " + str(len(train)) + " - Test Set " + str(len(test)))
 
-        print(
-            pd.crosstab(pd.Series(test_labels.ravel(), name='Real'), pd.Series(preds, name='Predicted'), margins=True))
+        print(pd.crosstab(pd.Series(test_labels.ravel(), name='Real'), pd.Series(preds, name='Predicted'), margins=True))
         classes = ['wilt', 'rest']
         print(metrics.classification_report(test_labels, preds, target_names=classes))
 
