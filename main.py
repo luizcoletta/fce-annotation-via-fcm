@@ -6,7 +6,7 @@ subImageHeight = 50
 subImageWidth = 50
 
 # Change this to the desired image to be cropped. Add the image on the 'images' folder
-img = 'images/IMG_11_Labeled.png'
+img = 'images/cana_raizen_1x1.tif' # 'images/IMG_11_Labeled.png'
 
 # Get dir name from img name
 ini = 0
