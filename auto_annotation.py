@@ -388,15 +388,33 @@ def ic(probs, SSet, train, train_labels, test, test_labels):
 
 def self_training(train, train_labels, test, test_labels):
     # https://scikit-learn.org/stable/modules/svm.html
-    [probs, preds] = svmClassification(train, train_labels, test)
+    #[probs, preds] = svmClassification(train, train_labels, test)
     # treinar um classificador com o train, train_labels
     # e testar a classificação dele no 'test'
     # vamos usar o probs para saber quais objetos nós vamos levar para training set
     # saida é: probs e preds
 
-    for k in range(1, 11):
+    ### USAR O FCM com c=3 e COM INPUT train
+    ### Saída será uma matriz de pertinências (c x n[344])
+    ### Selecionar colunas que contenham 0.7 ou mais e salvar um índice (que é a posição da coluna) e salvar também qual
+    ### é o grupo majoritário (que é o grupo da linha 0, linha 1 ou linha 2)
 
-        e = calc_class_entropy(probs)
+    ### BANCO AUTOMATICO (AMOSTRADO)
+    ### Gerar um novo training set MENOR com os p mais confiáveis (train_auto)
+    ### Gerar um novo train_labels mantendo correspondencias entre grupos e classes (train_labels_auto)
+
+    ### BANCO REAL (AMOSTRADO)
+    ### Gerar um novo train selecionando apenas os objetos do train original que referem-se aos índices do banco de cima
+    ### Gerar um novo train_labels selecionando apenas os objetos do train original que referem-se aos índices do banco de cima
+
+    # [probs, preds] = svmClassification(train, train_labels, test)
+    # print(pd.crosstab(pd.Series(test_labels.ravel(), name='Real'), pd.Series(preds, name='Predicted'), margins=True))
+    # classes = ['wilt', 'rest']
+    # print(metrics.classification_report(test_labels, preds, target_names=classes))
+
+    for k in range(1, 2):
+
+        #e = calc_class_entropy(probs)
         # com o e vc precisa descobrir quais sao os índices de menor valor de entropia
         # talvez tenha que ordenar (sort()) de forma crescente e pegar os 2 primeiros,
         # mas deve-se saber qual é o índice!
@@ -405,12 +423,13 @@ def self_training(train, train_labels, test, test_labels):
         # eles no training set (usaremos o probs pra isso).
         # saida: índices dos 2 mais confiáveis para ser um vetor w
 
-        df_e = pd.DataFrame(e)
-        df_e.sort_values(by=[0], inplace=True, ascending=False)
+        #df_e = pd.DataFrame(e)
+        #df_e.sort_values(by=[0], inplace=True, ascending=False)
 
         # funcao q a partir de e retorna um w que sao os indices dos c mais confiaveis
-        posicoes = df_e.index.values
-        posicoes = posicoes.tolist()
+        #posicoes = df_e.index.values
+        #posicoes = posicoes.tolist()
+        posicoes = -1
         p = 96
 
         w = posicoes[0:p]  # posicoes[0:p] # índices (posição) dos objetos que serão retirados do conjunto de teste e colocados no conjunto de treino
@@ -431,18 +450,19 @@ def self_training(train, train_labels, test, test_labels):
 ##### INICIO DO ALGORITMOS #####
 
 ### https://archive.ics.uci.edu/ml/datasets/wilt
-train_data_path = 'https://raw.githubusercontent.com/luizfsc/datasets/master/Oak-Pine-Wilt/training.csv'
-test_data_path = 'https://raw.githubusercontent.com/luizfsc/datasets/master/Oak-Pine-Wilt/testing.csv'
-# train_data_path = 'https://raw.githubusercontent.com/luizfsc/datasets/master/mastite.csv'
-# test_data_path = ''
+#train_data_path = 'https://raw.githubusercontent.com/luizfsc/datasets/master/Oak-Pine-Wilt/training.csv'
+#test_data_path = 'https://raw.githubusercontent.com/luizfsc/datasets/master/Oak-Pine-Wilt/testing.csv'
 
-train_data, train_labels, _, _ = get_batch_data(train_data_path, test_data_path, 5, True, 967, 1)
-# train_data, train_labels, _, _ = get_batch_data(train_data_path, test_data_path, 14, False, 8, 1)
 
-for i in range(2, 4):  # range(2,5):
+train_data_path = 'https://raw.githubusercontent.com/luizfsc/datasets/master/mastite.csv'
+test_data_path = ''
+### AQUI TEM QUE PASSAR O CAMINHO DO VGG16.CSV (nas variáveis de cima ai)
+
+train_data, train_labels, _, _ = get_batch_data(train_data_path, test_data_path, 7, False, 344, 1)
+
+for i in range(2, 3):  # range(2,5):
     print("\nTRAINING SET - part 1 - TEST SET - part " + str(i))
-    test_data, test_labels, _, _ = get_batch_data(train_data_path, test_data_path, 5, True, 967, i)
-    # test_data, test_labels, _, _ = get_batch_data(train_data_path, test_data_path, 14, False, 8, i)
+    test_data, test_labels, _, _ = get_batch_data(train_data_path, test_data_path, 7, False, 345, i)
 
     # print(np.array(test_data))
     # print(np.array(test_labels))
